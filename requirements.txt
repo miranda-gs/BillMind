@@ -1,0 +1,17 @@
+# Core dependencies
+psycopg2-binary
+SQLAlchemy
+APScheduler
+schedule
+selenium
+python-dotenv
+pendulum
+loguru
+pydantic
+click
+pandas
+requests
+
+# development / testing
+pytest
+faker

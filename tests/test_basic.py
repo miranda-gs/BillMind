@@ -22,3 +22,11 @@ def test_calculate_totals_returns_tuple():
         main.calculate_totals(None)  # this will raise because session is None
     except Exception as exc:
         assert isinstance(exc, Exception)
+
+
+def test_bb_settings_exist():
+    from BillMind.config import settings
+
+    # attributes should exist even if empty string
+    assert hasattr(settings, "bb_client_id")
+    assert hasattr(settings, "bb_client_secret")

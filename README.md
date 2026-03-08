@@ -66,6 +66,47 @@ session.close()
 - Scripts devem ser adicionados em `billmind/`.
 - Testes em `tests/` e executados via `pytest`.
 
+### 📡 Integração com Banco do Brasil
+
+Você pode usar a API oficial do Banco do Brasil para obter o valor da fatura
+automaticamente em vez de fazer scraping ou inserir manualmente. Para isso:
+
+1. Registre um aplicativo no portal de desenvolvedores do BB e obtenha as
+   credenciais (``client_id`` e ``client_secret``).
+2. Faça download do certificado de cliente (MTLS) e coloque o caminho em
+   ``BB_CERT_PATH`` no seu `.env`.
+3. Adicione as variáveis ao `.env`:
+
+    ```ini
+    BB_CLIENT_ID=seu_id
+    BB_CLIENT_SECRET=sua_chave
+    BB_CERT_PATH=C:\caminho\para\certificado.pem
+    ```
+
+4. Use o módulo `billmind.bb_api` para buscar e gravar o valor da fatura:
+
+    ```powershell
+    python -m billmind.bb_api <account_id>
+    # ou acionar programaticamente:
+    from billmind import bb_api, db, models
+    session = db.SessionLocal()
+    cartao = session.query(models.Cartao).first()
+    bb_api.update_invoice_in_db("<account_id>", cartao)
+    ```
+
+   O ``account_id`` é fornecido pelo BB quando você consulta as contas do
+   cliente via a própria API.
+
+5. Agende essa chamada junto com o agendador principal ou como tarefa
+   separada; por exemplo, adicione import e execução em
+   ``billmind/scheduler.py``.
+
+> **Segurança:** guarde suas credenciais em variáveis de ambiente e nunca poste
+> o certificado em código público.
+
+> **Observação:** os endpoints e payloads exatos podem mudar; adapte o código
+> do módulo ``bb_api.py`` de acordo com a documentação oficial.
+
 > **Nota:** o Selenium abrirá o navegador na primeira execução para você escanear o QR
 > do WhatsApp Web. Use um perfil de usuário persistente para não precisar repetir isso.
 BillMind é um aplicativo para monitoramento de gastos mensais, para nunca sair da planilha, mesmo para quem não tem o hábito de olhar o banco todos os dias. O nome é bem intuitivo, Bill = Conta e Mind = Mente, para o valor devido nunca sair da sua cabeça!

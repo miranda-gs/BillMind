@@ -28,8 +28,8 @@ Um bot simples que notifica por WhatsApp o valor estimado das faturas e o progre
 ## 🚀 Uso
 
 Antes de disparar o relatório você precisa ter pelo menos* uma meta semanal e
-algumas faturas cadastradas. Você pode inserir dados diretamente via SQL ou
-usar sessões do SQLAlchemy no REPL. Exemplo rápido:
+uma mensal, além de algumas faturas cadastradas. Você pode inserir dados
+diretamente via SQL ou usar sessões do SQLAlchemy no REPL. Exemplo rápido:
 
 ```python
 from billmind import db, models
@@ -37,19 +37,20 @@ from billmind.config import settings
 from datetime import date, timedelta
 
 session = db.SessionLocal()
-# criar meta para a semana atual
+# meta semanal
 week_start = date.today()
 week_end = week_start + timedelta(days=6)
 session.add(models.MetaSemanal(valor_meta=5000, semana_inicio=week_start, semana_fim=week_end))
+# meta mensal (mês e ano atuais)
+session.add(models.MetaMensal(valor_meta=20000, ano=week_start.year, mes=week_start.month))
 # adicionar um banco e fatura fictícia
 banco = models.Banco(nome="Banco Exemplo")
 cartao = models.Cartao(banco=banco, numero="1234 5678 9012 3456")
 session.add(cartao)
-session.add(models.Fatura(cartao=cartao, valor_estimado=123.45))
+session.add(models.Fatura(cartao=cartao, valor_estimado=123.45, data_obtencao=week_start))
 session.commit()
 session.close()
 ```
-
 - Enviar relatório imediato:
   ```powershell
   python -m billmind.main send

@@ -1,6 +1,6 @@
 from datetime import date
 
-from billmind import main
+from BillMind import main
 
 
 def test_week_range():
